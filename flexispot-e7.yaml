@@ -1,8 +1,8 @@
 esphome:
   name: flexispot-e7
   comment: Flexispot E7
-  # includes:
-  #   - desk_height_sensor.h
+  includes:
+    - desk_height_sensor.h
 
 esp32:
   board: az-delivery-devkit-v4
@@ -41,26 +41,27 @@ sensor:
   - platform: uptime
     name: Uptime
 
-  # - platform: custom
-  #   lambda: |-
-  #     auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
-  #     App.register_component(desk_height_sensor);
-  #     return {desk_height_sensor};
-  #   sensors:
-  #     id: 'desk_height'
-  #     name: Desk Height
-  #     unit_of_measurement: cm
-  #     accuracy_decimals: 1
-  #     icon: 'mdi:counter'
+  - platform: custom
+    lambda: |-
+      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
+      App.register_component(desk_height_sensor);
+      return {desk_height_sensor};
+    sensors:
+      id: 'desk_height'
+      name: Desk Height
+      unit_of_measurement: cm
+      accuracy_decimals: 1
+      icon: 'mdi:counter'
 
 switch:
-  # - platform: gpio
-  #   name: 'Virtual Screen'
-  #   pin:
-  #     number: GPIO23
-  #     mode: OUTPUT
-  #   restore_mode: ALWAYS_OFF
-  #   internal: true
+  - platform: gpio
+    name: 'Virtual Screen'
+    id: virtual_screen
+    pin:
+      number: GPIO23
+      mode: OUTPUT
+    restore_mode: ALWAYS_OFF
+    internal: true
 
   - platform: uart
     name: 'Preset 1'
@@ -90,9 +91,9 @@ switch:
     data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
     uart_id: desk_uart
 
-  # - platform: uart
-  #   name: '(wake up)' # Not available on all control panels
-  #   id: switch_wake_up
-  #   icon: mdi:gesture-tap-button
-  #   data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
-  #   uart_id: desk_uart
+  - platform: uart
+    name: 'Wake Up' # Not available on all control panels
+    id: switch_wake_up
+    icon: mdi:gesture-tap-button
+    data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
+    uart_id: desk_uart
