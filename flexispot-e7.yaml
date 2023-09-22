@@ -1,8 +1,8 @@
 esphome:
   name: flexispot-e7
   comment: Flexispot E7
-  # includes:
-  #   - desk_height_sensor.h
+  includes:
+    - desk_height_sensor.h
 
 esp32:
   board: az-delivery-devkit-v4
@@ -33,6 +33,30 @@ uart:
   tx_pin: GPIO17
   rx_pin: GPIO16
 
+script:
+  - id: screen_timer
+    mode: restart
+    then:
+      # on_start
+      - logger.log: 'Executing screen timer command'
+      - switch.turn_on: virtual_screen
+      - delay: 12s # timer length (keypad screen timeout is 10s + 2s buffer)
+      - switch.turn_off: virtual_screen
+      # on_end
+
+  - id: script_start_command
+    mode: restart
+    then:
+      - logger.log: 'Executing Empty command'
+      - if:
+          condition:
+            switch.is_off: virtual_screen
+          then:
+            - script.execute: screen_timer
+            - delay: 480ms
+          else:
+            - script.execute: screen_timer
+
 sensor:
   - platform: wifi_signal
     name: 'WiFi Signal'
@@ -41,54 +65,82 @@ sensor:
   - platform: uptime
     name: Uptime
 
-  # - platform: custom
-  #   lambda: |-
-  #     auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
-  #     App.register_component(desk_height_sensor);
-  #     return {desk_height_sensor};
-  #   sensors:
-  #     id: 'desk_height'
-  #     name: Desk Height
-  #     unit_of_measurement: cm
-  #     accuracy_decimals: 1
-  #     icon: 'mdi:counter'
+  - platform: custom
+    lambda: |-
+      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
+      App.register_component(desk_height_sensor);
+      return {desk_height_sensor};
+    sensors:
+      id: 'desk_height'
+      name: Desk Height
+      unit_of_measurement: cm
+      accuracy_decimals: 1
+      icon: 'mdi:counter'
+      on_value:
+        then:
+          - script.execute: screen_timer
 
 switch:
-  # - platform: gpio
-  #   name: 'Virtual Screen'
-  #   pin:
-  #     number: GPIO23
-  #     mode: OUTPUT
-  #   restore_mode: ALWAYS_OFF
-  #   internal: true
+  - platform: gpio
+    name: 'Virtual Screen'
+    id: virtual_screen
+    pin:
+      number: GPIO23
+      mode: OUTPUT
+    restore_mode: ALWAYS_OFF
+    internal: false
 
-  - platform: uart
+  - platform: template
     name: 'Preset 1'
     id: switch_preset1
     icon: mdi:numeric-1-box
-    data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
-    uart_id: desk_uart
+    turn_on_action:
+      - logger.log: 'Executing Preset 1 command'
+      - script.execute: script_start_command
+      - script.wait: script_start_command
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
+    internal: false
 
-  - platform: uart
+  - platform: template
     name: 'Preset 2'
     id: switch_preset2
     icon: mdi:numeric-2-box
-    data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
-    uart_id: desk_uart
+    turn_on_action:
+      - logger.log: 'Executing Preset 2 command'
+      - script.execute: script_start_command
+      - script.wait: script_start_command
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
+    internal: false
 
-  - platform: uart
-    name: 'Sit' # Preset 3 on some control panels
-    id: switch_sit
-    icon: mdi:chair-rolling
-    data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
-    uart_id: desk_uart
-
-  - platform: uart
-    name: 'Stand' # Not available for all control panels
+  - platform: template
+    name: 'Stand'
     id: switch_stand
-    icon: mdi:human-handsup
-    data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
-    uart_id: desk_uart
+    icon: mdi:numeric-3-box
+    turn_on_action:
+      - logger.log: 'Executing Preset Stand command'
+      - script.execute: script_start_command
+      - script.wait: script_start_command
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
+    internal: false
+
+  - platform: template
+    name: 'Sit'
+    id: switch_sit
+    icon: mdi:numeric-4-box
+    turn_on_action:
+      - logger.log: 'Executing Preset Sit command'
+      - script.execute: script_start_command
+      - script.wait: script_start_command
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
+    internal: false
 
   # - platform: uart
   #   name: '(wake up)' # Not available on all control panels
