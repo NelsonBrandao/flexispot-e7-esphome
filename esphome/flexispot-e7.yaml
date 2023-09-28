@@ -41,18 +41,6 @@ sensor:
   - platform: uptime
     name: Uptime
 
-  - platform: custom
-    lambda: |-
-      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
-      App.register_component(desk_height_sensor);
-      return {desk_height_sensor};
-    sensors:
-      id: 'desk_height'
-      name: Desk Height
-      unit_of_measurement: cm
-      accuracy_decimals: 1
-      icon: 'mdi:counter'
-
 switch:
   - platform: gpio
     name: 'Virtual Screen'
@@ -78,21 +66,21 @@ switch:
     uart_id: desk_uart
 
   - platform: uart
-    name: 'Sit' # Preset 3 on some control panels
+    name: 'Sit'
     id: switch_sit
     icon: mdi:chair-rolling
     data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
     uart_id: desk_uart
 
   - platform: uart
-    name: 'Stand' # Not available for all control panels
+    name: 'Stand'
     id: switch_stand
     icon: mdi:human-handsup
     data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
     uart_id: desk_uart
 
   - platform: uart
-    name: 'Wake Up' # Not available on all control panels
+    name: 'Wake Up'
     id: switch_wake_up
     icon: mdi:gesture-tap-button
     data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
