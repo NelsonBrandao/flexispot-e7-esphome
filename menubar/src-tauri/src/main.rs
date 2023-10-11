@@ -1,17 +1,24 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::{Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use tauri::{
+    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
+};
 use tauri_plugin_positioner::{Position, WindowExt};
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 fn main() {
-    let system_tray_menu = SystemTrayMenu::new();
+    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+    let system_tray_menu = SystemTrayMenu::new()
+        .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(quit);
+
+    let system_tray = SystemTray::new().with_menu(system_tray_menu);
+
     tauri::Builder::default()
         .setup(|app| {
             // Disable dock icon on MacOS
@@ -19,7 +26,7 @@ fn main() {
             Ok(())
         })
         .plugin(tauri_plugin_positioner::init())
-        .system_tray(SystemTray::new().with_menu(system_tray_menu))
+        .system_tray(system_tray)
         .on_system_tray_event(|app, event| {
             tauri_plugin_positioner::on_tray_event(app, &event);
             match event {
@@ -39,6 +46,12 @@ fn main() {
                         window.set_focus().unwrap();
                     }
                 }
+                SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                    "quit" => {
+                        std::process::exit(0);
+                    }
+                    _ => {}
+                },
                 _ => {}
             }
         })

@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "menubar",
+    "productName": "Flexispot Menubar",
     "version": "0.0.0"
   },
   "tauri": {
@@ -16,12 +16,16 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "http": {
+        "scope": ["http://*"],
+        "request": true
       }
     },
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "dev.nelsonbrandao.flexispot-menubar",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -41,15 +45,15 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 400,
+        "height": 100,
         "resizable": false,
         "title": "menubar",
-        "width": 200,
+        "width": 400,
         "visible": false,
         "hiddenTitle": true,
         "decorations": false,
         "focus": false,
-        "transparent": true,
+        "transparent": false,
         "skipTaskbar": true,
         "alwaysOnTop": true
       }

@@ -26,5 +26,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint', 'react'],
-  rules: {},
+  rules: {
+    'react/jsx-newline': 2,
+  },
 };
