@@ -12,7 +12,8 @@ esp32:
 logger:
 
 ota:
-  password: ''
+  - platform: esphome
+    password: !secret ota_password
 
 wifi:
   ssid: !secret wifi_ssid
@@ -22,8 +23,8 @@ wifi:
     ssid: 'Flexispot-E7 Fallback Hotspot'
     password: !secret ap_password
 
-web_server:
-  port: 80
+api:
+  password: !secret ha_api_password
 
 captive_portal:
 
