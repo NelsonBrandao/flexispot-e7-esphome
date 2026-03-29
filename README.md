@@ -2,8 +2,6 @@
 
 ESPHome custom component for controlling and monitoring Flexispot E7 standing desks via Home Assistant.
 
-Forked from [NelsonBrandao/flexispot-e7-esphome](https://github.com/NelsonBrandao/flexispot-e7-esphome).
-
 ## Features
 
 - Real-time desk height sensor (cm)
