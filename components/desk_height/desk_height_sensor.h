@@ -34,6 +34,7 @@ class DeskHeightSensor : public sensor::Sensor, public Component, public uart::U
   uint32_t boot_time_ = 0;
   uint32_t last_poll_time_ = 0;
   uint32_t last_activity_time_ = 0;
+  [[maybe_unused]] bool initial_reading_done_ = false;
 
   // Timing constants (in milliseconds)
   static const uint32_t BOOT_DELAY = 10000;           // 10s delay before initial M command
